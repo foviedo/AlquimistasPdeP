@@ -27,16 +27,46 @@ object alquimista {
   		item.capacidad()
   	})
   }
+  method esProfesional(){
+  	return self.calidadPromedioItems() > 50 && self.todosSusItemsDeCombateSonEfectivos() && self.esBuenExplorador()
+  }
+  method calidadPromedioItems(){
+  	return (self.calidadDeItemsDeCombate() + self.calidadDeItemsDeRecoleccion()) / (self.cantidadDeItemsDeCombate() + self.cantidadDeItemsDeRecoleccion())
+  }
+  method calidadDeItemsDeCombate(){
+  	return itemsDeCombate.sum({
+  		item =>
+  		item.calidad()
+  	})
+  }
+  method calidadDeItemsDeRecoleccion(){
+  	return itemsDeRecoleccion.sum({
+  		item =>
+  		item.calidad()
+  	})
+  }
+  method todosSusItemsDeCombateSonEfectivos(){
+  	return itemsDeCombate.all({
+  		item =>
+  		item.esEfectivo()
+  	})
+  }
 }
 
 object bomba {
   var danio = 15
+  var materiales = []
   
   method esEfectivo() {
     return danio > 100
   }
   method capacidad(){
   	return danio/2
+  }
+  method calidad(){
+  	materiales.min({
+  		material => material.calidad()
+  	})
   }
 }
 
@@ -61,6 +91,21 @@ object pocion {
   		material =>
   		material.esMistico()
   	})
+  }
+  method calidad(){
+  	if (self.fueCreadaConAlgunMaterialMistico()){
+  		return self.primerMaterialMistico().calidad()
+  	}
+  	return self.primerMaterial().calidad()
+  }
+  method primerMaterialMistico(){
+  	return materiales.filter({
+  		material =>
+  		material.esMistico()
+  	}).first()
+  }
+  method primerMaterial(){
+  	return materiales.first()
   }
 }
 
@@ -89,5 +134,15 @@ object debilitador {
   		material.esMistico()
   	})
   }
-
+  method calidad(){
+  	return self.calidadDeDosMejoresItems() / 2
+  }
+  method calidadDeDosMejoresItems(){
+  	return materiales.sortedBy({
+  		unMaterial, otroMaterial => unMaterial.calidad() > otroMaterial.calidad()
+  	}).take(2).sum({
+  		material => material.calidad()
+  	})
+  }
+ 
 }
