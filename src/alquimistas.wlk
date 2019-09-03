@@ -19,7 +19,7 @@ object alquimista {
   	
   }
   method esBuenExplorador(){
-  	return self.cantidadDeItemsDeRecoleccion() > 3
+  	return self.cantidadDeItemsDeRecoleccion() >= 3
   }
   method capacidadOfensiva(){
   	return itemsDeCombate.sum({
@@ -51,10 +51,16 @@ object alquimista {
   		item.esEfectivo()
   	})
   }
+  method agregarItemDeCombate(item){
+  	itemsDeCombate.add(item)
+  }
+  method agregarItemDeRecoleccion(item){
+  	itemsDeRecoleccion.add(item)
+  }
 }
 
 object bomba {
-  var danio = 15
+  var danio = 300
   var materiales = []
   
   method esEfectivo() {
@@ -68,11 +74,14 @@ object bomba {
   		material => material.calidad()
   	})
   }
+  method agregarMaterial(material){
+  	materiales.add(material)
+  }
 }
 
 object pocion {
   var materiales = []
-  var poderCurativo = 0
+  var poderCurativo = 200
   
   method esEfectivo() {
     return poderCurativo > 50 and self.fueCreadaConAlgunMaterialMistico()
@@ -106,6 +115,9 @@ object pocion {
   }
   method primerMaterial(){
   	return materiales.first()
+  }
+  method agregarMaterial(material){
+  	materiales.add(material)
   }
 }
 
@@ -144,5 +156,26 @@ object debilitador {
   		material => material.calidad()
   	})
   }
+  method agregarMaterial(material){
+  	materiales.add(material)
+  }
  
+}
+
+object materialMistico{
+	method esMistico(){
+		return true
+	}
+	method calidad(){
+		return 200
+	}
+}
+
+object materialNoMistico{
+	method esMistico(){
+		return false
+	}
+	method calidad(){
+		return 10
+	}
 }
